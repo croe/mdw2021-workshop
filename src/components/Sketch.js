@@ -1,15 +1,13 @@
 export default function sketch(p5) {
   let players = [];
   let player;
-  let question;
+  let gamedatas;
   let selected;
   let updatePlayer;
-  let updateQuest;
-  const row = 11;
-  const col = 11;
+  let updateGameData;
+  const row = 10;
+  const col = 10;
   const rectSize = 50;
-  const gap = 0;
-  let enteredAnswer = 0;
 
   p5.setup = () => p5.createCanvas(600, 600);
 
@@ -18,7 +16,7 @@ export default function sketch(p5) {
       updatePlayer = props.updatePlayer;
     }
     if (props.updateGameData) {
-      updateQuest = props.updateGameData;
+      updateGameData = props.updateGameData;
     }
     if (props.players) {
       players = props.players.map(player => {
@@ -31,75 +29,45 @@ export default function sketch(p5) {
         }
       })
     }
-    if (props.question) {
-      question = props.question.map(q => q.val())[0]
-    }
     if (props.selected) {
       selected = props.selected
+    }
+    if (props.gamedatas) {
+      gamedatas = props.gamedatas.map(data => data.val())[0]
     }
   };
 
   p5.keyPressed = (e) => {
+    // 移動と衝突判定
     if (selected && players) {
       player = players.filter((p) => p.key === selected.key)[0]
+      // 右の矢印を押した時、マスを超えないなら右に移動。
       if (p5.keyCode === p5.RIGHT_ARROW) {
-        // 右の矢印を押した時、マスを超えないようにする
-        if (player.x + 1 < row) {
+        if (player.x + 1 <= row) {
           let data = {x: player.x + 1}
           updatePlayer(data)
         }
       }
+      // 左の矢印を押した時、マスを超えないなら左に移動。
       if (p5.keyCode === p5.LEFT_ARROW) {
         if (player.x - 1 > 0) {
           let data = {x: player.x - 1}
           updatePlayer(data)
         }
       }
+      // 下の矢印を押した時、マスを超えないなら下に移動。
       if (p5.keyCode === p5.DOWN_ARROW) {
-        if (player.y + 1 < col) {
+        if (player.y + 1 <= col) {
           let data = {y: player.y + 1}
           updatePlayer(data)
         }
       }
+      // 上の矢印を押した時、マスを超えないなら上に移動。
       if (p5.keyCode === p5.UP_ARROW) {
         if (player.y - 1 > 0) {
           let data = {y: player.y - 1}
           updatePlayer(data)
         }
-      }
-      if (p5.keyCode === p5.BACKSPACE) {
-        let str = enteredAnswer.toString().slice(0, -1)
-        enteredAnswer = parseInt(str !== '' ? str : "0")
-      }
-      if (p5.keyCode === p5.ENTER) {
-        if (enteredAnswer !== 0) {
-          let data = question.answer.map((col, i) => {
-            return col.map((r, j) => {
-              if (j === (player.x - 1) && i === (player.y - 1)) {
-                return enteredAnswer
-              } else {
-                return r
-              }
-            })
-          })
-          updateQuest({answer: data});
-          enteredAnswer = 0;
-        }
-      }
-      if (
-        e.key === "0" ||
-        e.key === "1" ||
-        e.key === "2" ||
-        e.key === "3" ||
-        e.key === "4" ||
-        e.key === "5" ||
-        e.key === "6" ||
-        e.key === "7" ||
-        e.key === "8" ||
-        e.key === "9"
-      ) {
-        let str = enteredAnswer + e.key
-        enteredAnswer = parseInt(str)
       }
     }
   }
@@ -107,33 +75,40 @@ export default function sketch(p5) {
   p5.draw = () => {
     p5.background(200)
     p5.textSize(32)
-    if (question && question.row) {
-      for (let i = 0; i < row; i++) {
-        for (let j = 0; j < col; j++) {
-          p5.rect((i * rectSize) + (i * gap), (j * rectSize) + (j * gap), rectSize, rectSize);
-          if (i === 0 && j !== 0) {
-            p5.text(question.row[j - 1], (i * rectSize) + (i * gap) + 15, (j * rectSize) + (j * gap) + 40)
-          }
-          if (j === 0 && i !== 0) {
-            p5.text(question.col[i - 1], (i * rectSize) + (i * gap) + 15, (j * rectSize) + (j * gap) + 40)
-          }
-          if (i === 0 && j === 0) {
-            p5.text('+', (i * rectSize) + (i * gap) + 15, (j * rectSize) + (j * gap) + 35)
-          }
-          if (i !== 0 && j !== 0 && i < row && j < col && question.answer[j - 1][i - 1] !== 0) {
-            p5.text(question.answer[j - 1][i - 1],(i * rectSize) + 5, (j * rectSize) + 40)
-          }
-        }
+    // 移動するベースになるマスを表示する
+    for (let i = 0; i < row; i++) {
+      for (let j = 0; j < col; j++) {
+        p5.rect(i * rectSize, j * rectSize, rectSize, rectSize);
       }
     }
-    players.map((p) => {
+
+    if (gamedatas) {
+      gamedatas.map((data, index) => {
+        const date = new Date()
+        if (
+          data.showTime < date.getTime() &&
+          date.getTime() < data.showTime + data.hideTime &&
+          !data.pressed
+        ) {
+          p5.push()
+          p5.fill(0)
+          p5.rect((data.x - 1) * rectSize, (data.y - 1) * rectSize, rectSize, rectSize)
+          p5.pop()
+          players.map((player) => {
+            if(player.x === data.x && player.y === data.y) {
+              gamedatas[index].pressed = true
+              updateGameData(gamedatas)
+            }
+          })
+        }
+      })
+      p5.text(`スコア: ${gamedatas.filter(g => g.pressed).length} / ${gamedatas.length}`, 10, 540)
+    }
+
+    players.map((player) => {
       p5.push()
-      p5.fill(p.color)
-      p5.rect((p.x * rectSize) + (p.x * gap), (p.y * rectSize) + (p.y * gap), rectSize, rectSize)
-      if (enteredAnswer !== 0 && p.key === selected.key) {
-        p5.fill(255)
-        p5.text(enteredAnswer, (p.x * rectSize) + (p.x * gap) + 5, (p.y * rectSize) + (p.y * gap) + 35)
-      }
+      p5.fill(player.color)
+      p5.rect((player.x - 1) * rectSize, (player.y - 1) * rectSize, rectSize, rectSize)
       p5.pop()
     })
 

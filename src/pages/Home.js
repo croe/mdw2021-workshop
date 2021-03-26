@@ -47,16 +47,29 @@ const Home = () => {
   };
 
   const newGame = () => {
-    let data = {
-      row: [...Array(10)].map(() => Math.floor(Math.random() * 9) + 1),
-      col: [...Array(10)].map(() => Math.floor(Math.random() * 9) + 1),
-      answer: [...Array(10)].map(() => [...Array(10)].map(() => 0))
-    };
+    let i = 0
+    const timeLimit = 60000
+    const maxHideTime = 7000
+    const minHideTime = 3000
+    const amount = 50
+    const result = []
+    const date = new Date()
+    const startTime = date.getTime()
+    while (amount > i) {
+      result.push({
+        x: Math.floor(Math.random() * 9) + 1,
+        y: Math.floor(Math.random() * 9) + 1,
+        pressed: false,
+        showTime: Math.floor(Math.random() * timeLimit) + startTime,
+        hideTime: Math.floor(Math.random() * (maxHideTime - minHideTime)) + minHideTime,
+      })
+      i++
+    }
     const gameKey = gamedatas.map(q => q.key)[0];
     if (!gameKey) {
-      GameDataService.create(data)
+      GameDataService.create(result)
     } else {
-      GameDataService.update(gameKey, data)
+      GameDataService.update(gameKey, result)
     }
   };
 
@@ -78,7 +91,7 @@ const Home = () => {
           sketch={sketch}
           players={players}
           selected={currentPlayer}
-          question={gamedatas}
+          gamedatas={gamedatas}
           updatePlayer={handleUpdatePlayer}
           updateGameData={handleUpdateGameData}
         />
