@@ -17,6 +17,7 @@ const AddPlayer = () => {
   const handleInputChange = event => setPlayer({ ...player, [event.target.name]: event.target.value })
   const handleChangeColor = (color) => setPlayer({ ...player, color: color.hex })
 
+  // プレイヤーを登録する
   const savePlayer = () => {
     let data = {
       name: player.name,
@@ -24,7 +25,6 @@ const AddPlayer = () => {
       x: 1,
       y: 1,
     };
-
     PlayerDataService.create(data)
       .then(() => {
         setSubmitted(true);

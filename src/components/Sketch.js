@@ -12,12 +12,7 @@ export default function sketch(p5) {
   p5.setup = () => p5.createCanvas(600, 600);
 
   p5.myCustomRedrawAccordingToNewPropsHandler = props => {
-    if (props.updatePlayer) {
-      updatePlayer = props.updatePlayer;
-    }
-    if (props.updateGameData) {
-      updateGameData = props.updateGameData;
-    }
+    // 最新のプレイヤーの状態を受け取る
     if (props.players) {
       players = props.players.map(player => {
         return {
@@ -29,16 +24,30 @@ export default function sketch(p5) {
         }
       })
     }
+
+    // 選択中のプレイヤーを受け取る
     if (props.selected) {
       selected = props.selected
     }
+
+    // 最新のゲームデータを受け取る
     if (props.gamedatas) {
       gamedatas = props.gamedatas.map(data => data.val())[0]
+    }
+
+    // プレイヤーの情報をアップデートする関数を受け取る
+    if (props.updatePlayer) {
+      updatePlayer = props.updatePlayer;
+    }
+
+    // ゲームデータをアップデートする関数を受け取る
+    if (props.updateGameData) {
+      updateGameData = props.updateGameData;
     }
   };
 
   p5.keyPressed = (e) => {
-    // 移動と衝突判定
+    // プレイヤーの移動
     if (selected && players) {
       player = players.filter((p) => p.key === selected.key)[0]
       // 右の矢印を押した時、マスを超えないなら右に移動。
@@ -75,13 +84,15 @@ export default function sketch(p5) {
   p5.draw = () => {
     p5.background(200)
     p5.textSize(32)
-    // 移動するベースになるマスを表示する
+
+    // 床のマスを表示する
     for (let i = 0; i < row; i++) {
       for (let j = 0; j < col; j++) {
         p5.rect(i * rectSize, j * rectSize, rectSize, rectSize);
       }
     }
 
+    // もぐらを表示する
     if (gamedatas) {
       gamedatas.map((data, index) => {
         const date = new Date()
@@ -102,9 +113,11 @@ export default function sketch(p5) {
           })
         }
       })
+      // スコアを表示する
       p5.text(`スコア: ${gamedatas.filter(g => g.pressed).length} / ${gamedatas.length}`, 10, 540)
     }
 
+    // プレイヤーを表示する
     players.map((player) => {
       p5.push()
       p5.fill(player.color)
