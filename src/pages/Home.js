@@ -92,42 +92,57 @@ const Home = () => {
           updateGameData={handleUpdateGameData}
         />
         <div className="pl-4">
-        {loadingPlayer && <span>Loading...</span>}
-        {/* プレイヤーのリストを表示するエリア */}
-        <ul className="list-group">
-          {!loadingPlayer && players && players.map((player, index) => (
-            <li
-              className={"list-group-item align-items-center d-flex " + (index === currentIndex ? "active" : "")}
-              onClick={() => setActivePlayer(player, index)}
-              key={index}
+          {loadingPlayer && <span>Loading...</span>}
+          {/* プレイヤーのリストを表示するエリア */}
+          <ul className="list-group">
+            {!loadingPlayer && players && players.map((player, index) => (
+              <li
+                className={"list-group-item align-items-center d-flex " + (index === currentIndex ? "active" : "")}
+                onClick={() => setActivePlayer(player, index)}
+                key={index}
+              >
+                <span style={{ display: 'inline-block', width: '15px', height: '15px', borderRadius: '50%', margin: '0 4px 0 0', background: player ? player.val().color : '#000'}} />
+                {player.val().name}
+              </li>
+            ))}
+          </ul>
+
+          {/* 各種ボタン */}
+          <div>
+            <button
+              className="my-1 mr-2 btn btn-sm btn-success"
+              onClick={() => history.push('/add')}
             >
-              <span style={{ display: 'inline-block', width: '15px', height: '15px', borderRadius: '50%', margin: '0 4px 0 0', background: player ? player.val().color : '#000'}} />
-              {player.val().name}
-            </li>
-          ))}
-        </ul>
+              プレイヤーを追加する
+            </button>
 
-        {/* 各種ボタン */}
-        <button
-          className="my-3 mr-3 btn btn-sm btn-danger"
-          onClick={removeAllPlayer}
-        >
-          全てのプレイヤーを削除する
-        </button>
+            <button
+              className="my-1 mr-2 btn btn-sm btn-info"
+              onClick={newGame}
+            >
+              新しいゲームを始める
+            </button>
 
-        <button
-          className="my-3 mr-3 btn btn-sm btn-success"
-          onClick={() => history.push('/add')}
-        >
-          プレイヤーを追加する
-        </button>
+            <button
+              className="my-1 mr-2 btn btn-sm btn-danger"
+              onClick={removeAllPlayer}
+            >
+              全てのプレイヤーを削除する
+            </button>
+          </div>
 
-        <button
-          className="my-3 mr-3 btn btn-sm btn-info"
-          onClick={newGame}
-        >
-          新しいゲームを始める
-        </button>
+          {/* ゲームの説明 */}
+          <div className="mt-4">
+            <h4>オンライン協力もぐらたたき</h4>
+            <p>「新しいゲームを始める」ボタンを押すとランダムにもぐらが出現します！できるだけたくさん叩いて高得点を取ろう</p>
+            <p><b>ゲームの始め方</b></p>
+            <p>1. プレイヤーを追加するボタンから新しいプレイヤーを登録しましょう</p>
+            <p>2. プレイヤーリストから操作したいプレイヤーを選択しましょう</p>
+            <p>3. 他の参加者がいる場合は同じようにこのURLでゲームを開いて、1、2をおこないましょう</p>
+            <p>4. 全員の準備ができたら「新しいゲームを始める」ボタンをおしましょう</p>
+            <p>5. プレイヤーは矢印キーで動かすことができます。50匹のもぐらがランダムに出るので、同じマスを踏むことで叩いたことになります</p>
+            <p>6. より高いスコアを目指しましょう！</p>
+          </div>
 
         </div>
       </div>
