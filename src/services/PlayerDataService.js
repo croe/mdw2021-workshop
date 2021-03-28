@@ -1,6 +1,6 @@
 import firebase from '../firebase'
 
-const db = firebase.ref('/mogura_player')
+const db = firebase.ref('/sample_player')
 
 const getAll = () => {
   return db;

@@ -5,8 +5,8 @@ export default function sketch(p5) {
   let selected;
   let updatePlayer;
   let updateGameData;
-  const row = 10;
-  const col = 10;
+  const row = 11;
+  const col = 11;
   const rectSize = 50;
 
   p5.setup = () => p5.createCanvas(600, 600);
@@ -52,12 +52,12 @@ export default function sketch(p5) {
       player = players.filter((p) => p.key === selected.key)[0]
       // 右の矢印を押した時、マスを超えないなら右に移動。
       if (p5.keyCode === p5.RIGHT_ARROW) {
-        if (player.x + 1 <= row) {
+        if (player.x + 1 < row) {
           let data = {x: player.x + 1}
           updatePlayer(data)
         }
       }
-      // 左の矢印を押した時、マスを超えないなら左に移動。
+      // 右の矢印を押した時、マスを超えないなら右に移動。
       if (p5.keyCode === p5.LEFT_ARROW) {
         if (player.x - 1 > 0) {
           let data = {x: player.x - 1}
@@ -66,7 +66,7 @@ export default function sketch(p5) {
       }
       // 下の矢印を押した時、マスを超えないなら下に移動。
       if (p5.keyCode === p5.DOWN_ARROW) {
-        if (player.y + 1 <= col) {
+        if (player.y + 1 < col) {
           let data = {y: player.y + 1}
           updatePlayer(data)
         }
@@ -78,50 +78,44 @@ export default function sketch(p5) {
           updatePlayer(data)
         }
       }
+
+      if(player.x == gamedatas.mgrX && player.y == gamedatas.mgrY){
+        updateGameData({counter:gamedatas.counter+1 ,mgrX:  Math.floor(Math.random() * 9) + 1,mgrY:  Math.floor(Math.random() * 9) + 1})
+
+      }
     }
   }
 
   p5.draw = () => {
-    p5.background(200)
-    p5.textSize(32)
+    p5.colorMode(p5.HSB,100)
+    p5.background(100)
+    p5.textSize(20)
 
-    // 床のマスを表示する
-    for (let i = 0; i < row; i++) {
-      for (let j = 0; j < col; j++) {
-        p5.rect(i * rectSize, j * rectSize, rectSize, rectSize);
+
+    //床の柄
+    p5.noStroke()
+    for(let i = 1; i <= 10 ; i++){
+      for(let s = 1; s <= 10 ; s++){
+        if((i+s)%2==1){p5.fill(95)} else {p5.fill(98)}
+        p5.rect(i* rectSize, s * rectSize, rectSize, rectSize)
       }
     }
 
-    // もぐらを表示する
-    if (gamedatas) {
-      gamedatas.map((data, index) => {
-        const date = new Date()
-        if (
-          data.showTime < date.getTime() &&
-          date.getTime() < data.showTime + data.hideTime &&
-          !data.pressed
-        ) {
-          p5.push()
-          p5.fill(0)
-          p5.rect((data.x - 1) * rectSize, (data.y - 1) * rectSize, rectSize, rectSize)
-          p5.pop()
-          players.map((player) => {
-            if(player.x === data.x && player.y === data.y) {
-              gamedatas[index].pressed = true
-              updateGameData(gamedatas)
-            }
-          })
-        }
-      })
+    // もぐらの表示
+    if (gamedatas){
+      p5.fill(gamedatas.counter,70,100)
+      p5.ellipse(gamedatas.mgrX* rectSize + rectSize/2, gamedatas.mgrY * rectSize+ rectSize/2, rectSize/2, rectSize/2)
+      p5.fill(80)
       // スコアを表示する
-      p5.text(`スコア: ${gamedatas.filter(g => g.pressed).length} / ${gamedatas.length}`, 10, 540)
+      p5.text(gamedatas.counter,50, 580)
     }
 
-    // プレイヤーを表示する
-    players.map((player) => {
+    // プレイヤーの表示
+    players.forEach(function(p){
       p5.push()
-      p5.fill(player.color)
-      p5.rect((player.x - 1) * rectSize, (player.y - 1) * rectSize, rectSize, rectSize)
+      p5.fill(p.color)
+
+      p5.rect((p.x * rectSize) + rectSize/10, (p.y * rectSize) + rectSize/10, rectSize-rectSize*2/10, rectSize-rectSize*2/10)
       p5.pop()
     })
 

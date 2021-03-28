@@ -40,29 +40,17 @@ const Home = () => {
 
   // 新しくゲームを開始する時の初期設定
   const newGame = () => {
-    let i = 0
-    const timeLimit = 60000
-    const maxHideTime = 7000
-    const minHideTime = 3000
-    const amount = 50
-    const result = []
-    const date = new Date()
-    const startTime = date.getTime()
-    while (amount > i) {
-      result.push({
-        x: Math.floor(Math.random() * 9) + 1,
-        y: Math.floor(Math.random() * 9) + 1,
-        pressed: false,
-        showTime: Math.floor(Math.random() * timeLimit) + startTime,
-        hideTime: Math.floor(Math.random() * (maxHideTime - minHideTime)) + minHideTime,
-      })
-      i++
-    }
+    let data = {
+      counter:0,
+      mgrX: Math.floor(Math.random() * 9) + 1,
+      mgrY: Math.floor(Math.random() * 9) + 1,
+      answer: [...Array(10)].map(() => [...Array(10)].map(() => 0))
+    };
     const gameKey = gamedatas.map(q => q.key)[0];
     if (!gameKey) {
-      GameDataService.create(result)
+      GameDataService.create(data)
     } else {
-      GameDataService.update(gameKey, result)
+      GameDataService.update(gameKey, data)
     }
   }
 
@@ -133,14 +121,14 @@ const Home = () => {
 
           {/* ゲームの説明 */}
           <div className="mt-4">
-            <h4>オンライン協力もぐらたたき</h4>
-            <p>「新しいゲームを始める」ボタンを押すとランダムにもぐらが出現します！できるだけたくさん叩いて高得点を取ろう</p>
+            <h4>もぐらを追いかけろ！</h4>
+            <p>「新しいゲームを始める」ボタンを押すとランダムにもぐらが出現します！踏むと違う場所に移動するので追いかけよう！</p>
             <p><b>ゲームの始め方</b></p>
             <p>1. プレイヤーを追加するボタンから新しいプレイヤーを登録しましょう</p>
             <p>2. プレイヤーリストから操作したいプレイヤーを選択しましょう</p>
             <p>3. 他の参加者がいる場合は同じようにこのURLでゲームを開いて、1、2をおこないましょう</p>
             <p>4. 全員の準備ができたら「新しいゲームを始める」ボタンをおしましょう</p>
-            <p>5. プレイヤーは矢印キーで動かすことができます。50匹のもぐらがランダムに出るので、同じマスを踏むことで叩いたことになります</p>
+            <p>5. プレイヤーは矢印キーで動かすことができます。もぐらを踏みましょう</p>
             <p>6. より高いスコアを目指しましょう！</p>
           </div>
 
@@ -151,11 +139,3 @@ const Home = () => {
 };
 
 export default Home;
-
-const gameData = {
-  x: 4,
-  y: 7,
-  pressed: false,
-  showTime: 1616824184365,
-  hideTime: 5326,
-}

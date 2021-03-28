@@ -1,6 +1,6 @@
 import firebase from '../firebase'
 
-const db = firebase.ref('/mogura_gamedata')
+const db = firebase.ref('/smaple_gamedata')
 
 const getAll = () => {
   return db;
